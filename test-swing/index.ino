@@ -905,6 +905,7 @@ void loop()
     {
         strip.clear();
         strip.show();
+        particeCount = 0;
         return;
     }
 
@@ -1040,7 +1041,7 @@ void setup()
     ledBuffer = strip.getPixels();
     Particle.subscribe("eth2/", eth2Event);
     Particle.subscribe("show/", show);
-    animation = TWENTYTWENTY;
+    animation = FADE;
     nextAnimation = FADE;
     lastTime = millis();
     state = -1;

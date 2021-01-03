@@ -14,9 +14,15 @@ const gamma8_floor = Array.from(Array(256)).map((v, idx) => idx);
 const gamma8_partial = Array.from(Array(256)).fill(0);
 export { gamma8, gamma8_floor, gamma8_partial };
 
+const _subscriptions: Array<{
+  eventPrefix: string;
+  callback: (event: string, data: string) => void;
+}> = [];
+
 const Particle = {
-  subscribe(name, callback) {
-    console.log(`${name} event created`);
+  subscribe(eventPrefix, callback) {
+    console.log(`${eventPrefix} subscription created`);
+    _subscriptions.push({ eventPrefix, callback });
   },
 };
 const Log = {
@@ -81,4 +87,13 @@ export function strlen(str: string) {
 }
 export function hex2int(char: string) {
   return parseInt(char, 16);
+}
+
+/* Called by code-swing when the input changes */
+export function checkInput(event: string) {
+  _subscriptions.forEach((subscription) => {
+    if (event.startsWith(subscription.eventPrefix)) {
+      subscription.callback(event, "");
+    }
+  });
 }

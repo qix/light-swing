@@ -1,4 +1,8 @@
 {
   "scripts": [],
-  "styles": []
+  "styles": [],
+  "input": {
+    "fileName": "initialEvent.txt",
+    "prompt": "Send event (try show/2020 or eth2/block)"
+  }
 }

@@ -768,7 +768,6 @@ void animate2020()
 
     int pacX = (int)(-90 + state / 100);
 
-    int animationStep = (int)(state / 250);
     if (pacX > 2)
     {
         uint8_t bright = random(64, 256);
@@ -823,6 +822,8 @@ void animateFireworkFade()
     {
         newWorks = 20;
     }
+    fadeSpeed = 10;
+
     if (state < 4000)
     {
         Color c;
@@ -841,7 +842,7 @@ void animateFireworkFade()
         }
     }
     renderParticles();
-    rope_fade(10);
+    rope_fade(fadeSpeed);
     int seen = 0;
     for (int k = 0; k < particleCount; k++)
     {
@@ -882,8 +883,82 @@ void animateFireworkFade()
     }
     if (seen == 0)
     {
+        animation = FADE;
+    }
+}
+
+void animateBlock()
+{
+    rope_fade(fadeSpeed);
+    mult_rgb(96, 96, 96);
+    int ring = (int)(state / 1000);
+    if (ring >= ringCount)
+    {
+        animation = BLOCK_RAINBOW;
+        state = 0;
+    }
+    else
+    {
+        showRing(ringCount - ring - 1);
+    }
+}
+
+void animateBlockRainbow()
+{
+    rope_fade(1);
+    mult_rgb(96, 96, 96);
+    int step = ((int)(state / 50));
+    // ~160 steps of animation
+    if (step < ringIndexOffset)
+    {
+        hsv(step, (step * 15) % 360, 255, 96);
+    }
+    else
+    {
+        step -= ringIndexOffset;
+        for (int k = 0; k < ringCount; k++)
+        {
+            int v = -20 * (ringCount - k - 1) + 5 * step;
+            if (v > 0)
+            {
+                ringHSV(k, (k * 30 + ((int)(state / 10))) % 360, 255, min(v, 96));
+            }
+        }
+    }
+    if (step > 160)
+    {
+        animation = FADE;
+    }
+}
+
+void animateScheduled()
+{
+    rope_fade(fadeSpeed);
+    mult_rgb(96, 96, 96);
+    showRing(ringCount - 1);
+    if (nextAnimation == BLOCK)
+    {
         showNextAnimation();
     }
+    else if (nextAnimation != FADE)
+    {
+        showNextAnimation();
+        nextAnimation = SCHEDULED;
+    }
+}
+
+void animateFade()
+{
+    if (state == 0)
+    {
+        fadeSpeed = 1;
+    }
+    if (nextAnimation != FADE)
+    {
+        showNextAnimation();
+        return;
+    }
+    rope_fade(fadeSpeed);
 }
 
 void loop()
@@ -905,7 +980,7 @@ void loop()
     {
         strip.clear();
         strip.show();
-        particeCount = 0;
+        particleCount = 0;
         return;
     }
 
@@ -919,69 +994,19 @@ void loop()
     }
     else if (animation == BLOCK)
     {
-        rope_fade(fadeSpeed);
-        mult_rgb(96, 96, 96);
-        int ring = (int)(state / 1000);
-        if (ring >= ringCount)
-        {
-            animation = BLOCK_RAINBOW;
-            state = 0;
-        }
-        else
-        {
-            showRing(ringCount - ring - 1);
-        }
+        animateBlock();
     }
     else if (animation == BLOCK_RAINBOW)
     {
-        rope_fade(1);
-        mult_rgb(96, 96, 96);
-        int step = ((int)(state / 50));
-        // ~160 steps of animation
-        if (step < ringIndexOffset)
-        {
-            hsv(step, (step * 15) % 360, 255, 96);
-        }
-        else
-        {
-            step -= ringIndexOffset;
-            for (int k = 0; k < ringCount; k++)
-            {
-                int v = -20 * (ringCount - k - 1) + 5 * step;
-                if (v > 0)
-                {
-                    ringHSV(k, (k * 30 + ((int)(state / 10))) % 360, 255, min(v, 96));
-                }
-            }
-        }
-        if (step > 160)
-        {
-            animation = FADE;
-        }
+        animateBlockRainbow();
     }
     else if (animation == SCHEDULED)
     {
-        rope_fade(fadeSpeed);
-        mult_rgb(96, 96, 96);
-        showRing(ringCount - 1);
-        if (nextAnimation == BLOCK)
-        {
-            showNextAnimation();
-        }
-        else if (nextAnimation != FADE)
-        {
-            showNextAnimation();
-            nextAnimation = SCHEDULED;
-        }
+        animateScheduled();
     }
     else if (animation == FADE)
     {
-        if (nextAnimation != FADE)
-        {
-            showNextAnimation();
-            return;
-        }
-        rope_fade(fadeSpeed);
+        animateFade();
     }
     strip.show();
 }

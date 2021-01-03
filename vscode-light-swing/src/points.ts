@@ -1,26 +1,23 @@
-
-
 function range(v) {
   return Array.from(Array(v).keys());
 }
 
-
 const FLOWER_SVG = [
-  ...(range(115).map(i => {
-    return { x: 7, y: (115 + 15) - i };
-  })),
+  ...range(115).map((i) => {
+    return { x: 7, y: 115 + 15 - i };
+  }),
 ];
 
-range(16).forEach(x => {
-  range(16).forEach(y => {
+range(16).forEach((x) => {
+  range(16).forEach((y) => {
     if (x % 2 == 1) {
       y = 15 - y;
     }
     FLOWER_SVG.push({
       x,
       y,
-    })
-  })
+    });
+  });
 });
 
 const FUNKY_SVG = [

@@ -1,0 +1,6 @@
+#include "main.h"
+
+SYSTEM_THREAD(ENABLED)
+SYSTEM_MODE(AUTOMATIC);
+
+Adafruit_NeoPixel strip(ROPE_LEDS, PIXEL_PIN, PIXEL_TYPE);

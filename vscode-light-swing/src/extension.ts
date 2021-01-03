@@ -21,7 +21,12 @@ function codeSwingCompile(extension: string, code: string) {
   }
 
   if (error) {
-    return `<html><pre>${error}</pre></html>`;
+    return `
+      <html>
+        <body style="background-color: #000; color: #eee;">
+          <pre>${error}</pre>
+        </body>
+      </html>`;
   }
   const html = `
   <html>
